@@ -1,4 +1,4 @@
-version: "3.2"
+version: '3.2'
 
 services:
   # local mongo server
@@ -10,14 +10,19 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
-      MONGO_INITDB_DATABASE: colab
+      MONGO_INITDB_DATABASE: kaking01
     command: mongod --port 27018
-
     networks:
-      db:
-        aliases:
-          - mongodb
-
+      - webappnetwork
+  web:
+    container_name: shopping-platform-backend
+    build: .
+    ports:
+      - '8080:80'
+    depends_on:
+      - mongodb-server
+    networks:
+      - webappnetwork
   # init container to load mongo dumps to local container
 #   mongodb-seed:
 #     image: mongo:4.2.3
@@ -32,6 +37,6 @@ services:
 #       - DB_NAME=wawy_test
 #       - MONGO_USER=dbuser
 #       - MONGO_PASSWORD=dbpass
-
 networks:
-  db:
+  webappnetwork:
+    driver: bridge
