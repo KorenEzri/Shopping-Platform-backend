@@ -33,20 +33,22 @@ export const getItemsFromScraper = async (query: string) => {
   try {
     const scraperRes = await scrapeEbay(query);
     if (!scraperRes) return QueryResponses.ERROR;
-    try {
-      const search = new Search({
-        title: query,
-        descriptions: scraperRes.descriptions,
-        prices: scraperRes.prices,
-        images: scraperRes.images,
-      });
-      await search.save();
-    } catch ({ message }) {
-      console.log('message');
+    if (scraperRes.descriptions[2]) {
+      try {
+        const search = new Search({
+          title: query,
+          descriptions: scraperRes.descriptions,
+          prices: scraperRes.prices,
+          images: scraperRes.images,
+        });
+        await search.save();
+      } catch ({ message }) {
+        console.log('message');
+      }
     }
     return {
       status: QueryResponses.SUCCESS,
-      data: scraperRes,
+      data: { title: query, scraperRes },
     };
   } catch ({ message }) {
     console.log('Error at getItemsFromScraper() at item.util.ts at ~line 19');
